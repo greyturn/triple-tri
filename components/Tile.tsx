@@ -49,7 +49,9 @@ export default function Tile({ tileIndex, card, owner, playCard }: Props) {
 
     return (
         <TileDiv owner={owner} isOver={isOver} ref={dropRef}>
-            {card && <PlayCard owner={owner} isDraggable={false} id={card.id} cardID={card.cardID} isPlayed card={card}/>}
+            {card && (
+                <PlayCard owner={owner} isDraggable={false} id={card.id} cardID={card.cardID} isPlayed card={card} />
+            )}
         </TileDiv>
     );
 }

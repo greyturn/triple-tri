@@ -24,7 +24,16 @@ interface Props extends PlayCardType {
     card: PlayCardType;
 }
 
-export default function PlayCard({ className, owner, isDraggable, isPlayed = false, isPlayable = true, id, cardID, card }: Props) {
+export default function PlayCard({
+    className,
+    owner,
+    isDraggable,
+    isPlayed = false,
+    isPlayable = true,
+    id,
+    cardID,
+    card,
+}: Props) {
     const [{ isDragging }, dragRef] = useDrag(
         () => ({
             type: ItemTypes.CARD,
@@ -40,11 +49,8 @@ export default function PlayCard({ className, owner, isDraggable, isPlayed = fal
     const { logger } = useLogger();
 
     return (
-        <div
-            className={className}
-            ref={dragRef}
-        >
-            <Card isDragging={isDragging} owner={owner} id={cardID}/>
+        <div className={className} ref={dragRef}>
+            <Card isDragging={isDragging} owner={owner} id={cardID} />
         </div>
     );
 }

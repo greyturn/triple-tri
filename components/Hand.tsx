@@ -24,7 +24,16 @@ export function Hand({ className, hand, owner }: Props) {
             Hand: {owner}
             <HandGrid>
                 {hand.map((card, i) => {
-                    return <PlayCard key={`card-${i}`} owner={card.owner} id={card.id} cardID={card.cardID} isDraggable card={card}/>;
+                    return (
+                        <PlayCard
+                            key={`card-${i}`}
+                            owner={card.owner}
+                            id={card.id}
+                            cardID={card.cardID}
+                            isDraggable
+                            card={card}
+                        />
+                    );
                 })}
             </HandGrid>
         </div>
