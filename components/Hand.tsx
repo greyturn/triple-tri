@@ -1,8 +1,8 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
-import { useState } from 'react';
-import { Card } from './Card';
+
+import PlayCard, { PlayCardType } from './PlayCard';
 
 const HandGrid = styled('div')({
     display: 'grid',
@@ -12,26 +12,19 @@ const HandGrid = styled('div')({
     padding: '10px',
 });
 
-function testHand(owner: 'red' | 'blue') {
-    const card = { owner };
-    const newHand = new Array(5).fill(card);
-    return newHand;
-}
-
 interface Props {
     className?: string;
     owner: 'red' | 'blue';
+    hand: PlayCardType[];
 }
 
-export function Hand({ className, owner }: Props) {
-    const [hand, setHand] = useState(testHand('red'));
-
+export function Hand({ className, hand, owner }: Props) {
     return (
-        <div>
+        <div className={className}>
             Hand: {owner}
             <HandGrid>
-                {hand.map((card) => {
-                    return <Card key={card.owner} owner={card.owner} />;
+                {hand.map((card, i) => {
+                    return <PlayCard key={`card-${i}`} owner={card.owner} id={card.id} cardID={card.cardID} isDraggable card={card}/>;
                 })}
             </HandGrid>
         </div>

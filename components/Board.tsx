@@ -1,40 +1,32 @@
 'use client';
 
-import { css, styled } from '@pigment-css/react';
-import { useState } from 'react';
+import { styled } from '@pigment-css/react';
 
-import { Tile } from './Tile';
+import { PlayCardType } from './PlayCard';
+import Tile, { TileType } from './Tile';
 
-function resetBoard() {
-    const emptyTile: BoardTile = { owner: 'none' };
-    const newBoard: BoardTile[] = new Array(9).fill(emptyTile);
-    return newBoard;
-}
+import { Owner } from '../types';
+import useLogger from '../hooks/useLogger';
 
-const testCss = css({ fontSize: '24px' });
-
-const BoardDiv = styled('div')({ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', maxWidth: '600px' });
-
-type BoardTile = {
-    owner: 'red' | 'blue' | 'none';
-};
+const BoardDiv = styled('div')({ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', maxWidth: '450px' });
 
 interface Props {
     className?: string;
+    board: TileType[];
+    playCard: (card: PlayCardType, owner: Owner, tileIndex: number) => void;
 }
 
-export function Board({ className }: Props) {
-    const [board, setBoard] = useState<BoardTile[]>(resetBoard());
+export function Board({ className, board, playCard }: Props) {
+    const { logger } = useLogger();
 
     return (
-        <div className={testCss}>
+        <div className={className}>
             <h2>Board</h2>
+
             <BoardDiv>
-                {board.map((tile) => {
+                {board.map((tile, i) => {
                     return (
-                        <Tile key={`${tile.owner}`} owner='none'>
-                            {tile.owner}
-                        </Tile>
+                        <Tile key={`tile-${i}`} tileIndex={i} owner={tile.owner} playCard={playCard} card={tile.card} />
                     );
                 })}
             </BoardDiv>

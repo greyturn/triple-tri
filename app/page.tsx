@@ -1,16 +1,19 @@
+'use client';
+
 import { css } from '@pigment-css/react';
-import { Board } from '../components/Board';
-import { Card } from '../components/Card';
-import { Hand } from '../components/Hand';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+
+import Game from '../components/Game';
 
 export default function Page() {
     return (
         <div>
             <main>
                 <div className={css({ fontSize: '30px' })}>Triple Tri</div>
-                <Card owner='red' />
-                <Hand owner='red' />
-                <Board />
+                <DndProvider backend={HTML5Backend}>
+                    <Game />
+                </DndProvider>
             </main>
             <footer></footer>
         </div>

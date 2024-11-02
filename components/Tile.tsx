@@ -1,23 +1,55 @@
 import { styled } from '@pigment-css/react';
-import { ReactNode } from 'react';
+import { useDrop } from 'react-dnd';
 
-interface Props {
-    children?: ReactNode;
-    owner: 'red' | 'blue' | 'none';
-}
+import PlayCard, { PlayCardType } from './PlayCard';
 
-const TileDiv = styled('div')<Props>({
+import { Owner } from '../types';
+import { ItemTypes } from '../constants';
+
+const TileDiv = styled('div')<{ owner: Owner; isOver: boolean }>({
     padding: '5px',
     border: 'solid',
-    minHeight: '40px',
-    minWidth: '40px',
+    minHeight: '150px',
+    minWidth: '150px',
     variants: [
         { props: { owner: 'red' }, style: { backgroundColor: 'pink' } },
         { props: { owner: 'blue' }, style: { backgroundColor: 'lightblue' } },
         { props: { owner: 'none' }, style: { backgroundColor: 'lightgrey' } },
+        { props: { isOver: true }, style: { backgroundColor: 'lightYellow' } },
     ],
 });
 
-export function Tile({ children, owner }: Props) {
-    return <TileDiv owner={owner}>{children}</TileDiv>;
+export interface TileType {
+    owner: Owner;
+    playCard: (card: PlayCardType, owner: Owner, tileIndex: number) => void;
+    tileIndex: number;
+    card?: PlayCardType;
+}
+
+interface Props extends TileType {
+    className?: string;
+}
+
+export default function Tile({ tileIndex, card, owner, playCard }: Props) {
+    function isEmpty() {
+        return !card;
+    }
+
+    const [{ isOver }, dropRef] = useDrop(
+        () => ({
+            accept: ItemTypes.CARD,
+            drop: (item: { card: PlayCardType; owner: Owner }) => playCard(item.card, item.owner, tileIndex),
+            canDrop: () => isEmpty(),
+            collect: (monitor) => ({
+                isOver: !!monitor.isOver(),
+            }),
+        }),
+        [tileIndex, card, owner, playCard]
+    );
+
+    return (
+        <TileDiv owner={owner} isOver={isOver} ref={dropRef}>
+            {card && <PlayCard owner={owner} isDraggable={false} id={card.id} cardID={card.cardID} isPlayed card={card}/>}
+        </TileDiv>
+    );
 }
