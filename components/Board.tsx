@@ -6,7 +6,6 @@ import { PlayCardType } from './PlayCard';
 import Tile, { TileType } from './Tile';
 
 import { Owner } from '../types';
-import useLogger from '../hooks/useLogger';
 
 const BoardDiv = styled('div')({ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', maxWidth: '450px' });
 
@@ -17,8 +16,6 @@ interface Props {
 }
 
 export function Board({ className, board, playCard }: Props) {
-    const { logger } = useLogger();
-
     return (
         <div className={className}>
             <h2>Board</h2>

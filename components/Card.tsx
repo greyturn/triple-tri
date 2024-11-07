@@ -8,7 +8,9 @@ const CardDiv = styled('div')<{ owner: Owner; isDragging: boolean }>({
     position: 'relative',
     height: '100px',
     width: '100px',
-    border: 'dashed',
+    border: 'black dashed',
+    color: 'white',
+    textAlign: 'center',
     variants: [
         { props: { owner: 'red' }, style: { backgroundColor: 'red' } },
         { props: { owner: 'blue' }, style: { backgroundColor: 'blue' } },
@@ -16,11 +18,11 @@ const CardDiv = styled('div')<{ owner: Owner; isDragging: boolean }>({
     ],
 });
 
-const Bottom = styled('div')({ height: '33%' });
+const Bottom = styled('div')({ height: '33%', fontSize: '20px' });
 
-const Middle = styled('div')({ height: '34%' });
+const Middle = styled('div')({ height: '34%', fontSize: '20px' });
 
-const Top = styled('div')({ height: '33%' });
+const Top = styled('div')({ height: '33%', fontSize: '20px' });
 
 type Stats = {
     top: number;
@@ -40,11 +42,11 @@ interface Props extends CardType {
     isDragging: boolean;
 }
 
-function getCardStats(id: number): Stats {
+export function getCardStats(_id: number): Stats {
     const top = 0;
-    const right = 0;
-    const bottom = 0;
-    const left = 0;
+    const right = 1;
+    const bottom = 2;
+    const left = 3;
     const type = 'none';
 
     return { top, right, bottom, left, type };
@@ -57,7 +59,7 @@ export default function Card({ className, owner, isDragging, id }: Props) {
         <CardDiv className={className} owner={owner} isDragging={isDragging}>
             <Top>{stats.top}</Top>
             <Middle>
-                {stats.left} {owner}-{id} {stats.bottom}
+                {stats.left} {owner}-{id} {stats.right}
             </Middle>
             <Bottom>{stats.bottom}</Bottom>
         </CardDiv>

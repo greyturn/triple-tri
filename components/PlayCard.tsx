@@ -2,11 +2,9 @@
 
 import { useDrag } from 'react-dnd';
 
-import Card, { CardType } from './Card';
+import Card from './Card';
 
 import { ItemTypes } from '../constants';
-
-import useLogger from '../hooks/useLogger';
 
 import { Owner } from '../types';
 
@@ -28,8 +26,6 @@ export default function PlayCard({
     className,
     owner,
     isDraggable,
-    isPlayed = false,
-    isPlayable = true,
     id,
     cardID,
     card,
@@ -46,9 +42,8 @@ export default function PlayCard({
         [isDraggable, id, owner]
     );
 
-    const { logger } = useLogger();
-
     return (
+        // @ts-expect-error - The typing of ConnectDragSource is incorrect
         <div className={className} ref={dragRef}>
             <Card isDragging={isDragging} owner={owner} id={cardID} />
         </div>

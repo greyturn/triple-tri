@@ -48,7 +48,9 @@ export default function Tile({ tileIndex, card, owner, playCard }: Props) {
     );
 
     return (
+        // @ts-expect-error - The typing of ConnectDropTarget is incorrect
         <TileDiv owner={owner} isOver={isOver} ref={dropRef}>
+            {tileIndex}
             {card && (
                 <PlayCard owner={owner} isDraggable={false} id={card.id} cardID={card.cardID} isPlayed card={card} />
             )}
