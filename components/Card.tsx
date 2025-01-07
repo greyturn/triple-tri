@@ -18,11 +18,21 @@ const CardDiv = styled('div')<{ owner: Owner; isDragging: boolean }>({
     ],
 });
 
-const Bottom = styled('div')({ height: '33%', fontSize: '20px' });
+const Bottom = styled('div')({ position: 'absolute', fontSize: '20px', left: '45px', top: '70px' });
 
-const Middle = styled('div')({ height: '34%', fontSize: '20px' });
+const Left = styled('div')({ position: 'absolute', fontSize: '20px', left: '10px', top: '35px' });
+const Right = styled('div')({ position: 'absolute', fontSize: '20px', left: '80px', top: '35px' });
 
-const Top = styled('div')({ height: '33%', fontSize: '20px' });
+const Top = styled('div')({ position: 'absolute', fontSize: '20px', top: '5px', left: '45px' });
+
+const Image = styled('img')({
+    height: '48px',
+    width: '48px',
+    objectFit: 'none',
+    top: '28px',
+    left: '28px',
+    position: 'absolute',
+});
 
 type Stats = {
     top: number;
@@ -54,13 +64,16 @@ export function getCardStats(_id: number): Stats {
 
 export default function Card({ className, owner, isDragging, id }: Props) {
     const stats = getCardStats(id);
+    const spriteSrc = '/static/sprites/bulbasaur.png';
 
     return (
         <CardDiv className={className} owner={owner} isDragging={isDragging}>
+            <Image src={spriteSrc} />
             <Top>{stats.top}</Top>
-            <Middle>
-                {stats.left} {owner}-{id} {stats.right}
-            </Middle>
+            <div>
+                <Right>{stats.right}</Right>
+                <Left>{stats.left}</Left>
+            </div>
             <Bottom>{stats.bottom}</Bottom>
         </CardDiv>
     );

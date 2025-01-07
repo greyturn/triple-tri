@@ -1,6 +1,6 @@
 'use client';
 
-import { css } from '@pigment-css/react';
+import { css, styled } from '@pigment-css/react';
 import { useEffect, useState } from 'react';
 
 import { Board } from './Board';
@@ -11,6 +11,13 @@ import { PlayCardType } from './PlayCard';
 import { Owner } from '../types';
 import useLogger from '../hooks/useLogger';
 import { getCardStats } from './Card';
+
+const PlayArea = styled('div')({ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly' });
+
+const Log = styled('div')({
+    maxWidth: '750px',
+    ['ul']: { backgroundColor: 'lightGrey', overflow: 'scroll', maxHeight: '200px' },
+});
 
 function testHand(owner: Owner) {
     const newHand = [];
@@ -23,6 +30,10 @@ function testHand(owner: Owner) {
     return newHand;
 }
 
+function createHand(owner: Owner, cardDb: string) {
+    const newHand = [];
+}
+
 export default function Game() {
     const [board, setBoard] = useState<TileType[]>(resetBoard());
     const [blueHand, setBlueHand] = useState<PlayCardType[]>(testHand('blue'));
@@ -32,13 +43,16 @@ export default function Game() {
         red: [],
     });
     const [turn, setTurn] = useState(0);
+    const [currentPlayer, setCurrentPlayer] = useState('red');
     const [useAi, _setUseAi] = useState(true);
+    const [winner, setWinner] = useState<Owner>('none');
+    const [cardDb, setCardDb] = useState('');
 
-    const { log, logger } = useLogger();
+    const { log, logMessage } = useLogger();
 
     function playCardFromHand(owner: Owner, card: PlayCardType) {
         if (owner === 'red' || owner === 'blue') {
-            logger(`Playing card ${card.id} for ${owner}`);
+            logMessage(`Playing card ${card.id} for ${owner}`);
 
             const newCards = { ...playedCards };
             newCards[owner].push(card);
@@ -61,29 +75,50 @@ export default function Game() {
         comparison: 'top' | 'bottom' | 'left' | 'right'
     ) {
         if (board[compareCard].card && board[playedCard].card) {
+            logMessage(
+                `Played Card: {
+                  Top: ${getCardStats(board[playedCard].card.id).top.toString()}, 
+                  Right: ${getCardStats(board[playedCard].card.id).right.toString()}, 
+                  Bottom: ${getCardStats(board[playedCard].card.id).bottom.toString()}, 
+                  Left: ${getCardStats(board[playedCard].card.id).left.toString()}
+                }`
+            );
+            logMessage(
+                `Compared Card: {
+                  Top: ${getCardStats(board[compareCard].card.id).top.toString()}, 
+                  Right: ${getCardStats(board[compareCard].card.id).right.toString()}, 
+                  Bottom: ${getCardStats(board[compareCard].card.id).bottom.toString()}, 
+                  Left: ${getCardStats(board[compareCard].card.id).left.toString()}
+                }`
+            );
+
             if (
                 comparison === 'top' &&
                 getCardStats(board[compareCard].card.id).bottom < getCardStats(board[playedCard].card.id).top
             ) {
+                logMessage('Compared top');
                 return true;
-            }
-            if (
+            } else if (
                 comparison === 'right' &&
                 getCardStats(board[compareCard].card.id).left < getCardStats(board[playedCard].card.id).right
             ) {
+                logMessage('Compared right');
                 return true;
-            }
-            if (
+            } else if (
                 comparison === 'bottom' &&
                 getCardStats(board[compareCard].card.id).top < getCardStats(board[playedCard].card.id).bottom
             ) {
+                logMessage('Comparing bottom');
                 return true;
-            }
-            if (
+            } else if (
                 comparison === 'left' &&
                 getCardStats(board[compareCard].card.id).right < getCardStats(board[playedCard].card.id).left
             ) {
+                logMessage('Compared left');
                 return true;
+            } else {
+                logMessage('No Flip');
+                return false;
             }
         }
 
@@ -97,7 +132,7 @@ export default function Game() {
             newTile.card.owner = 'blue';
         } else if (newTile.owner === 'blue' && newTile.card) {
             newTile.owner = 'red';
-            newTile.card.owner = 'blue';
+            newTile.card.owner = 'red';
         }
 
         return newTile;
@@ -110,12 +145,12 @@ export default function Game() {
         const right = tileIndex + 1;
         const left = tileIndex - 1;
 
-        logger(`top ${top}`);
-        logger(`bottom ${bottom}`);
-        logger(`right ${right}`);
-        logger(`left ${left}`);
+        logMessage(`top ${top}`);
+        logMessage(`bottom ${bottom}`);
+        logMessage(`right ${right}`);
+        logMessage(`left ${left}`);
 
-        if (top > 0) {
+        if (top >= 0) {
             if (checkForFlip(board, tileIndex, top, 'top')) {
                 const newTile = flipOwner(board[top]);
                 newBoard[top] = newTile;
@@ -190,6 +225,28 @@ export default function Game() {
         playCard(blueHand[0], 'blue', tile);
     }
 
+    function getWinner(board: TileType[]): Owner {
+        let winner: Owner = 'none';
+        let red = 0;
+        let blue = 0;
+
+        for (const tile of board) {
+            if (tile.owner === 'blue') {
+                blue++;
+            } else if (tile.owner === 'red') {
+                red++;
+            }
+        }
+
+        if (red > blue) {
+            winner = 'red';
+        } else if (blue > red) {
+            winner = 'blue';
+        }
+
+        return winner;
+    }
+
     useEffect(() => {
         if (useAi) {
             if (turn % 2 === 1) {
@@ -201,20 +258,37 @@ export default function Game() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [turn, useAi]);
 
+    useEffect(() => {
+        if (turn === 9) {
+            setWinner(getWinner(board));
+        }
+    }, [board, turn]);
+
     return (
         <div>
-            <div>Turn: {turn}</div>
-            <Hand hand={redHand} owner='red' />
-            <Board className={css({ margin: '5px' })} board={board} playCard={playCard} />
-            <Hand hand={blueHand} owner='blue' />
             <div>
+                Turn: {turn} - {currentPlayer.toUpperCase()} is Playing{' '}
+                {turn === 9 && winner !== 'none' && <div>{winner} WINS!</div>}
+                {turn === 9 && winner === 'none' && <div>TIE GAME</div>}
+            </div>
+            <PlayArea>
+                <Hand hand={redHand} owner='red' />
+                <Board className={css({ margin: '5px' })} board={board} playCard={playCard} />
+                <Hand hand={blueHand} owner='blue' />
+            </PlayArea>
+
+            <Log>
                 LOG
                 <ul>
                     {log.map((line, i) => {
-                        return <li key={`log-${i}`}>{line}</li>;
+                        return (
+                            <li key={`log-${i}`}>
+                                [{line.type}] {line.timestamp} - {line.message}
+                            </li>
+                        );
                     })}
                 </ul>
-            </div>
+            </Log>
         </div>
     );
 }

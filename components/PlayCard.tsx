@@ -22,14 +22,7 @@ interface Props extends PlayCardType {
     card: PlayCardType;
 }
 
-export default function PlayCard({
-    className,
-    owner,
-    isDraggable,
-    id,
-    cardID,
-    card,
-}: Props) {
+export default function PlayCard({ className, owner, isDraggable, id, cardID, card }: Props) {
     const [{ isDragging }, dragRef] = useDrag(
         () => ({
             type: ItemTypes.CARD,
