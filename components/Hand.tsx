@@ -29,9 +29,9 @@ export function Hand({ className, hand, owner }: Props) {
                             key={`card-${i}`}
                             owner={card.owner}
                             id={card.id}
-                            cardID={card.cardID}
                             isDraggable
                             card={card}
+                            info={card.info}
                         />
                     );
                 })}

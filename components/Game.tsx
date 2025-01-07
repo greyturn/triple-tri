@@ -11,6 +11,7 @@ import { PlayCardType } from './PlayCard';
 import { Owner } from '../types';
 import useLogger from '../hooks/useLogger';
 import { getCardStats } from './Card';
+import ChooseCardDb from './ChooseCardDb';
 
 const PlayArea = styled('div')({ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly' });
 
@@ -23,15 +24,16 @@ function testHand(owner: Owner) {
     const newHand = [];
 
     for (let i = 0; i < 5; i++) {
-        const card: PlayCardType = { id: i, owner, isDraggable: true, cardID: i + 10 }; // TODO: create a file of starter cards
+        const card: PlayCardType = {
+            id: i,
+            owner,
+            isDraggable: true,
+            info: { top: 0, right: 1, bottom: 2, left: 3, type: 'none', id: i + 10 },
+        }; // TODO: create a file of starter cards
         newHand.push(card);
     }
 
     return newHand;
-}
-
-function createHand(owner: Owner, cardDb: string) {
-    const newHand = [];
 }
 
 export default function Game() {
@@ -46,7 +48,7 @@ export default function Game() {
     const [currentPlayer, setCurrentPlayer] = useState('red');
     const [useAi, _setUseAi] = useState(true);
     const [winner, setWinner] = useState<Owner>('none');
-    const [cardDb, setCardDb] = useState('');
+    const [cardDb, setCardDb] = useState('cardDB');
 
     const { log, logMessage } = useLogger();
 
@@ -225,6 +227,18 @@ export default function Game() {
         playCard(blueHand[0], 'blue', tile);
     }
 
+    function createHand(owner: Owner, cardDb: any) {
+        logMessage(`Creating hand for ${owner}`);
+        const newHand: PlayCardType[] = [];
+
+        for (let i = 0; i < 5; i++) {
+            const card: PlayCardType = { id: i, owner, isDraggable: true, info: cardDb.cards[i] };
+            newHand.push(card);
+        }
+
+        return newHand;
+    }
+
     function getWinner(board: TileType[]): Owner {
         let winner: Owner = 'none';
         let red = 0;
@@ -264,8 +278,23 @@ export default function Game() {
         }
     }, [board, turn]);
 
+    useEffect(() => {
+        async function fetchCardDb() {
+            const response = await fetch(`/api/carddb/${cardDb}`);
+            const data = await response.json();
+
+            if (data) {
+                setRedHand(createHand('red', data));
+                setBlueHand(createHand('blue', data));
+            }
+        }
+
+        fetchCardDb();
+    }, [cardDb]);
+
     return (
         <div>
+            <ChooseCardDb setCardDb={setCardDb} cardDb={cardDb} />
             <div>
                 Turn: {turn} - {currentPlayer.toUpperCase()} is Playing{' '}
                 {turn === 9 && winner !== 'none' && <div>{winner} WINS!</div>}

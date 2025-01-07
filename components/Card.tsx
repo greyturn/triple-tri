@@ -34,7 +34,8 @@ const Image = styled('img')({
     position: 'absolute',
 });
 
-type Stats = {
+export type CardInfo = {
+    id: number;
     top: number;
     right: number;
     bottom: number;
@@ -44,7 +45,7 @@ type Stats = {
 
 export interface CardType {
     owner: Owner;
-    id: number;
+    info: CardInfo;
 }
 
 interface Props extends CardType {
@@ -52,18 +53,18 @@ interface Props extends CardType {
     isDragging: boolean;
 }
 
-export function getCardStats(_id: number): Stats {
+export function getCardStats(_id: number): CardInfo {
     const top = 0;
     const right = 1;
     const bottom = 2;
     const left = 3;
     const type = 'none';
 
-    return { top, right, bottom, left, type };
+    return { top, right, bottom, left, type, id: 0 };
 }
 
-export default function Card({ className, owner, isDragging, id }: Props) {
-    const stats = getCardStats(id);
+export default function Card({ className, owner, isDragging, info }: Props) {
+    const stats = info;
     const spriteSrc = '/static/sprites/bulbasaur.png';
 
     return (

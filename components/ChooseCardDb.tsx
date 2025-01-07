@@ -1,25 +1,41 @@
-import fs from 'fs';
 import { useEffect, useState } from 'react';
 
 interface Props {
+    cardDb: string;
     setCardDb: any;
 }
 
-export default function ChooseCardDb({ setCardDb }: Props) {
+export default function ChooseCardDb({ cardDb, setCardDb }: Props) {
     const [cardFiles, setCardFiles] = useState<string[]>([]);
 
-    useEffect(() => {}, [cardFiles]);
+    useEffect(() => {
+        async function fetchCardFiles() {
+            const response = await fetch('/api/carddb');
+            const data = await response.json();
+            setCardFiles(data);
+        }
+
+        fetchCardFiles();
+    }, [setCardFiles]);
 
     return (
         <form onSubmit={(e) => e.preventDefault()}>
-            <label htmlFor='carddb-select'>Select Card DB</label>
+            <label htmlFor='carddb-select'>Select Card DB: </label>
             <select
                 id='carddb-select'
-                value={cardFiles}
+                value={cardDb}
                 onChange={(e) => {
                     setCardDb(e.target.value);
                 }}
-            ></select>
+            >
+                {cardFiles.map((option, i) => {
+                    return (
+                        <option key={i} value={option}>
+                            {option}
+                        </option>
+                    );
+                })}
+            </select>
         </form>
     );
 }
