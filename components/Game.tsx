@@ -8,9 +8,8 @@ import { Hand } from './Hand';
 import { TileType } from './Tile';
 import { PlayCardType } from './PlayCard';
 
-import { Owner } from '../types';
+import { CardDB, Owner } from '../types';
 import useLogger from '../hooks/useLogger';
-import { getCardStats } from './Card';
 import ChooseCardDb from './ChooseCardDb';
 
 const PlayArea = styled('div')({ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly' });
@@ -28,7 +27,7 @@ function testHand(owner: Owner) {
             id: i,
             owner,
             isDraggable: true,
-            info: { top: 0, right: 1, bottom: 2, left: 3, type: 'none', id: i + 10 },
+            info: { top: 0, right: 1, bottom: 2, left: 3, type: 'none', id: (i + 10).toString() },
         }; // TODO: create a file of starter cards
         newHand.push(card);
     }
@@ -45,7 +44,7 @@ export default function Game() {
         red: [],
     });
     const [turn, setTurn] = useState(0);
-    const [currentPlayer, setCurrentPlayer] = useState('red');
+    const [currentPlayer] = useState('red');
     const [useAi, _setUseAi] = useState(true);
     const [winner, setWinner] = useState<Owner>('none');
     const [cardDb, setCardDb] = useState('cardDB');
@@ -79,43 +78,34 @@ export default function Game() {
         if (board[compareCard].card && board[playedCard].card) {
             logMessage(
                 `Played Card: {
-                  Top: ${getCardStats(board[playedCard].card.id).top.toString()}, 
-                  Right: ${getCardStats(board[playedCard].card.id).right.toString()}, 
-                  Bottom: ${getCardStats(board[playedCard].card.id).bottom.toString()}, 
-                  Left: ${getCardStats(board[playedCard].card.id).left.toString()}
+                  Top: ${board[playedCard].card.info.top.toString()}, 
+                  Right: ${board[playedCard].card.info.right.toString()}, 
+                  Bottom: ${board[playedCard].card.info.bottom.toString()}, 
+                  Left: ${board[playedCard].card.info.left.toString()}
                 }`
             );
             logMessage(
                 `Compared Card: {
-                  Top: ${getCardStats(board[compareCard].card.id).top.toString()}, 
-                  Right: ${getCardStats(board[compareCard].card.id).right.toString()}, 
-                  Bottom: ${getCardStats(board[compareCard].card.id).bottom.toString()}, 
-                  Left: ${getCardStats(board[compareCard].card.id).left.toString()}
+                  Top: ${board[playedCard].card.info.top.toString()}, 
+                  Right: ${board[playedCard].card.info.right.toString()}, 
+                  Bottom: ${board[playedCard].card.info.bottom.toString()}, 
+                  Left: ${board[playedCard].card.info.left.toString()}
                 }`
             );
 
-            if (
-                comparison === 'top' &&
-                getCardStats(board[compareCard].card.id).bottom < getCardStats(board[playedCard].card.id).top
-            ) {
+            if (comparison === 'top' && board[playedCard].card.info.bottom < board[playedCard].card.info.top) {
                 logMessage('Compared top');
                 return true;
-            } else if (
-                comparison === 'right' &&
-                getCardStats(board[compareCard].card.id).left < getCardStats(board[playedCard].card.id).right
-            ) {
+            } else if (comparison === 'right' && board[playedCard].card.info.left < board[playedCard].card.info.right) {
                 logMessage('Compared right');
                 return true;
             } else if (
                 comparison === 'bottom' &&
-                getCardStats(board[compareCard].card.id).top < getCardStats(board[playedCard].card.id).bottom
+                board[playedCard].card.info.top < board[playedCard].card.info.bottom
             ) {
                 logMessage('Comparing bottom');
                 return true;
-            } else if (
-                comparison === 'left' &&
-                getCardStats(board[compareCard].card.id).right < getCardStats(board[playedCard].card.id).left
-            ) {
+            } else if (comparison === 'left' && board[playedCard].card.info.right < board[playedCard].card.info.left) {
                 logMessage('Compared left');
                 return true;
             } else {
@@ -227,7 +217,7 @@ export default function Game() {
         playCard(blueHand[0], 'blue', tile);
     }
 
-    function createHand(owner: Owner, cardDb: any) {
+    function createHand(owner: Owner, cardDb: CardDB) {
         logMessage(`Creating hand for ${owner}`);
         const newHand: PlayCardType[] = [];
 
@@ -281,7 +271,7 @@ export default function Game() {
     useEffect(() => {
         async function fetchCardDb() {
             const response = await fetch(`/api/carddb/${cardDb}`);
-            const data = await response.json();
+            const data: CardDB = await response.json();
 
             if (data) {
                 setRedHand(createHand('red', data));

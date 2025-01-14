@@ -10,7 +10,7 @@ export async function GET(_req: Request, context: { params: { db: string } }) {
         return new Response(responseJson || 'error', { status: 200 });
     }
 
-    let data = JSON.parse(fs.readFileSync(`${directoryPath}${filename}.json`, 'utf8'));
+    const data = JSON.parse(fs.readFileSync(`${directoryPath}${filename}.json`, 'utf8'));
 
     responseJson = JSON.stringify(data);
 

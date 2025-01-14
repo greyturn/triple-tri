@@ -35,12 +35,12 @@ const Image = styled('img')({
 });
 
 export type CardInfo = {
-    id: number;
+    id: string;
     top: number;
     right: number;
     bottom: number;
     left: number;
-    type: 'none';
+    type: string;
 };
 
 export interface CardType {
@@ -53,7 +53,7 @@ interface Props extends CardType {
     isDragging: boolean;
 }
 
-export function getCardStats(_id: number): CardInfo {
+/* export function getCardStats(_id: number): CardInfo {
     const top = 0;
     const right = 1;
     const bottom = 2;
@@ -61,15 +61,16 @@ export function getCardStats(_id: number): CardInfo {
     const type = 'none';
 
     return { top, right, bottom, left, type, id: 0 };
-}
+} */
 
 export default function Card({ className, owner, isDragging, info }: Props) {
     const stats = info;
     const spriteSrc = '/static/sprites/bulbasaur.png';
+    const fileName = spriteSrc.split('/').pop();
 
     return (
         <CardDiv className={className} owner={owner} isDragging={isDragging}>
-            <Image src={spriteSrc} />
+            <Image src={spriteSrc} alt={`card sprite ${fileName}`} />
             <Top>{stats.top}</Top>
             <div>
                 <Right>{stats.right}</Right>

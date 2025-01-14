@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 
 interface Props {
     cardDb: string;
-    setCardDb: any;
+    setCardDb: Dispatch<SetStateAction<string>>;
 }
 
 export default function ChooseCardDb({ cardDb, setCardDb }: Props) {
