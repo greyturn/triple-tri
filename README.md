@@ -4,7 +4,12 @@ A project for fun to try and replicate and extend the minigame from various Fina
 
 ## Dev
 
-First, run the development server:
+First, create an dev env file: `.env.development`. In it add:
+```
+NEXT_PUBLIC_VERCEL_ENV=development
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
@@ -18,4 +23,8 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 ## Technologies
 
-Uses [Pigment CSS](https://github.com/mui/pigment-css)
+Built on React and NextJS.
+
+Styling via [Pigment CSS](https://github.com/mui/pigment-css)
+
+Hosted on Vercel.
