@@ -3,7 +3,7 @@ import path from 'path';
 
 export async function GET(_req: Request, context: { params: { db: string } }) {
     const filename = context.params.db;
-    const directoryPath = path.join(__dirname, '../../../../../../static/cardlists/');
+    const directoryPath = `${process.cwd()}/static/cardlists/`
     let responseJson = '';
 
     if (!filename) {
