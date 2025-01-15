@@ -2,7 +2,7 @@
 
 import { useDrag } from 'react-dnd';
 
-import Card from './Card';
+import Card, { CardInfo } from './Card';
 
 import { ItemTypes } from '../constants';
 
@@ -14,7 +14,7 @@ export interface PlayCardType {
     isPlayed?: boolean;
     isDraggable: boolean;
     owner: Owner;
-    cardID: number;
+    info: CardInfo;
 }
 
 interface Props extends PlayCardType {
@@ -22,14 +22,7 @@ interface Props extends PlayCardType {
     card: PlayCardType;
 }
 
-export default function PlayCard({
-    className,
-    owner,
-    isDraggable,
-    id,
-    cardID,
-    card,
-}: Props) {
+export default function PlayCard({ className, owner, isDraggable, card }: Props) {
     const [{ isDragging }, dragRef] = useDrag(
         () => ({
             type: ItemTypes.CARD,
@@ -39,13 +32,13 @@ export default function PlayCard({
                 isDragging: !!monitor.isDragging(),
             }),
         }),
-        [isDraggable, id, owner]
+        [isDraggable, card, owner]
     );
 
     return (
         // @ts-expect-error - The typing of ConnectDragSource is incorrect
         <div className={className} ref={dragRef}>
-            <Card isDragging={isDragging} owner={owner} id={cardID} />
+            <Card isDragging={isDragging} owner={owner} info={card.info} />
         </div>
     );
 }

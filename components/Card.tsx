@@ -18,23 +18,34 @@ const CardDiv = styled('div')<{ owner: Owner; isDragging: boolean }>({
     ],
 });
 
-const Bottom = styled('div')({ height: '33%', fontSize: '20px' });
+const Bottom = styled('div')({ position: 'absolute', fontSize: '20px', left: '45px', top: '70px' });
 
-const Middle = styled('div')({ height: '34%', fontSize: '20px' });
+const Left = styled('div')({ position: 'absolute', fontSize: '20px', left: '10px', top: '35px' });
+const Right = styled('div')({ position: 'absolute', fontSize: '20px', left: '80px', top: '35px' });
 
-const Top = styled('div')({ height: '33%', fontSize: '20px' });
+const Top = styled('div')({ position: 'absolute', fontSize: '20px', top: '5px', left: '45px' });
 
-type Stats = {
+const Image = styled('img')({
+    height: '48px',
+    width: '48px',
+    objectFit: 'none',
+    top: '28px',
+    left: '28px',
+    position: 'absolute',
+});
+
+export type CardInfo = {
+    id: string;
     top: number;
     right: number;
     bottom: number;
     left: number;
-    type: 'none';
+    type: string;
 };
 
 export interface CardType {
     owner: Owner;
-    id: number;
+    info: CardInfo;
 }
 
 interface Props extends CardType {
@@ -42,25 +53,29 @@ interface Props extends CardType {
     isDragging: boolean;
 }
 
-export function getCardStats(_id: number): Stats {
+/* export function getCardStats(_id: number): CardInfo {
     const top = 0;
     const right = 1;
     const bottom = 2;
     const left = 3;
     const type = 'none';
 
-    return { top, right, bottom, left, type };
-}
+    return { top, right, bottom, left, type, id: 0 };
+} */
 
-export default function Card({ className, owner, isDragging, id }: Props) {
-    const stats = getCardStats(id);
+export default function Card({ className, owner, isDragging, info }: Props) {
+    const stats = info;
+    const spriteSrc = '/static/sprites/bulbasaur.png';
+    const fileName = spriteSrc.split('/').pop();
 
     return (
         <CardDiv className={className} owner={owner} isDragging={isDragging}>
+            <Image src={spriteSrc} alt={`card sprite ${fileName}`} />
             <Top>{stats.top}</Top>
-            <Middle>
-                {stats.left} {owner}-{id} {stats.right}
-            </Middle>
+            <div>
+                <Right>{stats.right}</Right>
+                <Left>{stats.left}</Left>
+            </div>
             <Bottom>{stats.bottom}</Bottom>
         </CardDiv>
     );
