@@ -19,7 +19,7 @@ const Log = styled('div')({
     ['ul']: { backgroundColor: 'lightGrey', overflow: 'scroll', maxHeight: '200px' },
 });
 
-function testHand(owner: Owner) {
+function _testHand(owner: Owner) {
     const newHand = [];
 
     for (let i = 0; i < 5; i++) {
@@ -37,8 +37,8 @@ function testHand(owner: Owner) {
 
 export default function Game() {
     const [board, setBoard] = useState<TileType[]>(resetBoard());
-    const [blueHand, setBlueHand] = useState<PlayCardType[]>(testHand('blue'));
-    const [redHand, setRedHand] = useState<PlayCardType[]>(testHand('red'));
+    const [blueHand, setBlueHand] = useState<PlayCardType[]>([]);
+    const [redHand, setRedHand] = useState<PlayCardType[]>([]);
     const [playedCards, setPlayedCards] = useState<{ blue: PlayCardType[]; red: PlayCardType[] }>({
         blue: [],
         red: [],
@@ -57,13 +57,16 @@ export default function Game() {
 
             const newCards = { ...playedCards };
             newCards[owner].push(card);
-            setPlayedCards(newCards);
+            setPlayedCards({ ...newCards });
+
+            const redHandCopy = [...redHand];
+            const blueHandCopy = [...blueHand];
 
             if (owner === 'red') {
-                const filteredHand = redHand.filter((redCard) => redCard.id !== card.id);
+                const filteredHand = redHandCopy.filter((redCard) => redCard.id !== card.id);
                 setRedHand([...filteredHand]);
             } else if (owner === 'blue') {
-                const filteredHand = blueHand.filter((blueCard) => blueCard.id !== card.id);
+                const filteredHand = blueHandCopy.filter((blueCard) => blueCard.id !== card.id);
                 setBlueHand([...filteredHand]);
             }
         }
@@ -131,7 +134,7 @@ export default function Game() {
     }
 
     function flipCards(board: TileType[], tileIndex: number) {
-        const newBoard = board;
+        const newBoard = [...board];
         const top = tileIndex - 3;
         const bottom = tileIndex + 3;
         const right = tileIndex + 1;
@@ -176,12 +179,12 @@ export default function Game() {
     function playCard(card: PlayCardType, owner: Owner, tileIndex: number) {
         playCardFromHand(owner, card);
 
-        let newBoard = board.map((tile) => ({ ...tile }));
+        let newBoard = [...board];
         newBoard[tileIndex] = { owner, playCard, tileIndex, card };
 
         newBoard = flipCards(newBoard, tileIndex);
 
-        setBoard(newBoard);
+        setBoard([...newBoard]);
         setTurn(turn + 1);
     }
 
@@ -274,8 +277,11 @@ export default function Game() {
             const data: CardDB = await response.json();
 
             if (data) {
-                setRedHand(createHand('red', data));
-                setBlueHand(createHand('blue', data));
+                const redHand = createHand('red', data);
+                const blueHand = createHand('blue', data);
+
+                setRedHand([...redHand]);
+                setBlueHand([...blueHand]);
             }
         }
 

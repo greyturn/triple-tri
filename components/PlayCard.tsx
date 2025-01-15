@@ -22,7 +22,7 @@ interface Props extends PlayCardType {
     card: PlayCardType;
 }
 
-export default function PlayCard({ className, owner, isDraggable, id, info, card }: Props) {
+export default function PlayCard({ className, owner, isDraggable, card }: Props) {
     const [{ isDragging }, dragRef] = useDrag(
         () => ({
             type: ItemTypes.CARD,
@@ -32,13 +32,13 @@ export default function PlayCard({ className, owner, isDraggable, id, info, card
                 isDragging: !!monitor.isDragging(),
             }),
         }),
-        [isDraggable, id, owner]
+        [isDraggable, card, owner]
     );
 
     return (
         // @ts-expect-error - The typing of ConnectDragSource is incorrect
         <div className={className} ref={dragRef}>
-            <Card isDragging={isDragging} owner={owner} info={info} />
+            <Card isDragging={isDragging} owner={owner} info={card.info} />
         </div>
     );
 }
