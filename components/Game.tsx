@@ -274,7 +274,7 @@ export default function Game() {
 
     useEffect(() => {
         async function fetchCardDb() {
-            const response = await apiFetch(`/api/carddb/${cardDb}`);
+            const response = await fetch(`/api/carddb/${cardDb}`);
             const data: CardDB = await response.json();
 
             if (data) {
