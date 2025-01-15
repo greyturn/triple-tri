@@ -1,5 +1,4 @@
 import fs from 'fs';
-import path from 'path';
 
 export async function GET(_req: Request, context: { params: { db: string } }) {
     const filename = context.params.db;
