@@ -11,7 +11,7 @@ import { PlayCardType } from './PlayCard';
 import { CardDB, Owner } from '../types';
 import useLogger from '../hooks/useLogger';
 import ChooseCardDb from './ChooseCardDb';
-import { apiFetch } from '../utils/api';
+// import { apiFetch } from '../utils/api';
 
 const PlayArea = styled('div')({ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly' });
 
