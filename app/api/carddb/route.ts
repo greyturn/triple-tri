@@ -1,8 +1,8 @@
 import fs from 'fs';
-import path from 'path';
 
 export async function GET() {
-    const directoryPath = path.join(__dirname, '../../../../../static/cardlists/');
+    console.log(process.cwd())
+    const directoryPath = `${process.cwd()}/static/cardlists/`;
     let responseJson = '';
 
     const fileNames: string[] = [];
